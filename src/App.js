@@ -1,51 +1,61 @@
 import React, { useState, useEffect } from 'react';
 
-import Image from './components/Image';
-import Spinner from './components/Spinner';
-import Map from './components/Map';
-import YTVideo from './components/YTVideo';
 
+function TodoForm({ parentFunction }) {
+  const [text, setText] = useState('');
 
-import reactImage from './images/react.png';
-
-function App() {
-
-
-  const videos = [
-    {
-      duration: '5:30',
-      title: 'This is a longer and more useful Video Title',
-      channel: 'Channel Name Here',
-      views: '89K views - 2 months ago',
-      thumbnail: 'https://picsum.photos/250/150'
-    },
-    {
-      duration: '3:20',
-      title: 'Video Title',
-      channel: 'Im Here',
-      views: '33K views - 1 month ago',
-      thumbnail: 'https://picsum.photos/250/150'
-    },
-    {
-      duration: '1:02',
-      title: 'CCC College',
-      channel: 'CCC',
-      views: '1 view - 2 minutes ago',
-      thumbnail: 'https://picsum.photos/250/150'
-    },
-
-  ]
-
-  const [videosArray, setVideos] = useState(videos);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (text.trim()) {
+      parentFunction(text);
+      setText('');
+    }
+  };
 
 
   return (
-    <div className="App">
-      {videos.map((video, index) => (
-        <YTVideo key={index} {...video} />
-      ))}
-    </div >
+    <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+        placeholder="Add a new todo"
+      />
+      <button type="submit">Add</button>
+    </form>
   );
+}
+
+function TodoList({ parentStateArray }) {
+  return (
+    <ul style={{ listStyleType: 'none', padding: 0 }}>
+      {parentStateArray.map(todo => (
+        <li key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
+          <input type='checkbox' />
+          <span>{todo.text}</span>
+          <button>X</button>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+function App() {
+  const [todos, setTodos] = useState([]);
+
+  const addTodo = (text) => {
+    const newTodo = { id: Date.now(), text, completed: false };
+    setTodos([...todos, newTodo]);
+  };
+
+  return (
+    <>
+      <h1>Todo List</h1>
+      <TodoForm parentFunction={addTodo} />
+      <TodoList parentStateArray={todos} />
+    </>
+  );
+
 }
 
 export default App;
