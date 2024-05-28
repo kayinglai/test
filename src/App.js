@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
-function TodoForm({ parentFunction }) {
+function TodoForm({ addTodo }) {
   const [text, setText] = useState('');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (text.trim()) {
-      parentFunction(text);
+      addTodo(text);
       setText('');
     }
   };
@@ -26,14 +26,14 @@ function TodoForm({ parentFunction }) {
   );
 }
 
-function TodoList({ parentStateArray }) {
+function TodoList({ todos, removeTodo, toggleTodo }) {
   return (
     <ul style={{ listStyleType: 'none', padding: 0 }}>
-      {parentStateArray.map(todo => (
+      {todos.map(todo => (
         <li key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <input type='checkbox' />
+          <input type='checkbox' onChange={() => toggleTodo(todo.id)} />
           <span>{todo.text}</span>
-          <button>X</button>
+          <button onClick={() => removeTodo(todo.id)}>X</button>
         </li>
       ))}
     </ul>
@@ -45,25 +45,32 @@ function App() {
 
   const addTodo = (text) => {
     const myUUID = uuidv4();
-    console.log(myUUID);
-
     const newTodo = { id: myUUID, text, completed: false };
     setTodos([...todos, newTodo]);
   };
 
   const removeTodo = (id) => {
-    todos.filter(todo => todo.id !== id)
-
-
-
-    //setTodos(todos.filter(todo => todo.id !== id));
+    setTodos(todos.filter(todo => todo.id !== id));
   };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map(todo =>
+        todo.id === id ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
+
+  useEffect(() => {
+    localStorage.setItem('todos', JSON.stringify(todos));
+  }, [todos]);
 
   return (
     <>
       <h1>Todo List</h1>
-      <TodoForm parentFunction={addTodo} />
-      <TodoList parentStateArray={todos} />
+      <TodoForm addTodo={addTodo} />
+      <TodoList todos={todos} removeTodo={removeTodo} toggleTodo={toggleTodo} />
     </>
   );
 
