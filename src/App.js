@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-
+import { v4 as uuidv4 } from 'uuid';
 
 function TodoForm({ parentFunction }) {
   const [text, setText] = useState('');
@@ -44,8 +44,19 @@ function App() {
   const [todos, setTodos] = useState([]);
 
   const addTodo = (text) => {
-    const newTodo = { id: Date.now(), text, completed: false };
+    const myUUID = uuidv4();
+    console.log(myUUID);
+
+    const newTodo = { id: myUUID, text, completed: false };
     setTodos([...todos, newTodo]);
+  };
+
+  const removeTodo = (id) => {
+    todos.filter(todo => todo.id !== id)
+
+
+
+    //setTodos(todos.filter(todo => todo.id !== id));
   };
 
   return (
