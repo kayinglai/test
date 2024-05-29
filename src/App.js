@@ -1,76 +1,47 @@
 import React, { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import ReactDOM from 'react-dom/client';
+import { RouterProvider, createBrowserRouter, createRoutesFromElements, Route, Link, Outlet } from 'react-router-dom';
 
-function TodoForm({ addTodo }) {
-  const [text, setText] = useState('');
+import Home from './pages/Home';
+import About from './pages/About';
+import Contact from './pages/Contact';
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (text.trim()) {
-      addTodo(text);
-      setText('');
-    }
-  };
-
-
+function Layout() {
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="text"
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Add a new todo"
-      />
-      <button type="submit">Add</button>
-    </form>
+    <div>
+      <nav>
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+          <li>
+            <Link to="/about">About</Link>
+          </li>
+          <li>
+            <Link to="/contact">Contact</Link>
+          </li>
+        </ul>
+      </nav>
+      <Outlet /> {/* Renders the matched child route */}
+    </div>
   );
 }
 
-function TodoList({ todos, removeTodo, toggleTodo }) {
-  return (
-    <ul style={{ listStyleType: 'none', padding: 0 }}>
-      {todos.map(todo => (
-        <li key={todo.id} style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
-          <input type='checkbox' onChange={() => toggleTodo(todo.id)} />
-          <span>{todo.text}</span>
-          <button onClick={() => removeTodo(todo.id)}>X</button>
-        </li>
-      ))}
-    </ul>
+// Create the router
+const router = createBrowserRouter(
+  createRoutesFromElements(
+    <Route path="/" element={<Layout />}>
+      <Route index element={<Home />} />
+      <Route path="about" element={<About />} />
+      <Route path="contact" element={<Contact />} />
+    </Route>
   )
-}
+);
 
 function App() {
-  const [todos, setTodos] = useState([]);
-
-  const addTodo = (text) => {
-    const myUUID = uuidv4();
-    const newTodo = { id: myUUID, text, completed: false };
-    setTodos([...todos, newTodo]);
-  };
-
-  const removeTodo = (id) => {
-    setTodos(todos.filter(todo => todo.id !== id));
-  };
-
-  const toggleTodo = (id) => {
-    setTodos(
-      todos.map(todo =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
-  };
-
-
-  useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos));
-  }, [todos]);
-
   return (
     <>
-      <h1>Todo List</h1>
-      <TodoForm addTodo={addTodo} />
-      <TodoList todos={todos} removeTodo={removeTodo} toggleTodo={toggleTodo} />
+      <RouterProvider router={router} />;
     </>
   );
 
