@@ -1,8 +1,8 @@
 function Contact() {
     return (
         <div>
-            <h1>Contact Page</h1>
-            <input type="text" name="E-Mail" id="E-Mail" />
+            <h1>Contact Me</h1>
+            <p>https://uxfol.io/p/00065220/contact</p>
         </div>
     );
 }

@@ -38,15 +38,41 @@ const router = createBrowserRouter(
   )
 );
 
-function App() {
+function PostList() {
+  const [posts, setPosts] = useState([]);
+  const [startIndex, setStartIndex] = useState(0);
+
+  useEffect(() => {
+    fetchPosts();
+  }, []); // Fetch posts only once when the component mounts
+
+  const fetchPosts = () => {
+    fetch('https://jsonplaceholder.typicode.com/posts')
+      .then(response => response.json())
+      .then(data => setPosts(data))
+      .catch(error => console.error('Error fetching posts:', error));
+  };
+
+  const handleLoadMore = () => {
+    setStartIndex(prevIndex => prevIndex + 5); // Increment startIndex by 5
+  };
+
+  const visiblePosts = posts.slice(0, startIndex + 5);
+
   return (
     <>
-      <RouterProvider router={router} />;
+    <RouterProvider router={router} />;
+      <h1>Posts</h1>
+      <ul>
+        {visiblePosts.map(post => (
+          <li key={post.id}>
+            <h2>{post.title}</h2>
+          </li>
+        ))}
+      </ul>
+      {startIndex + 5 < posts.length && <button onClick={handleLoadMore}>Load More</button>}
     </>
   );
-
 }
 
-export default App;
-
-
+export default PostList;
